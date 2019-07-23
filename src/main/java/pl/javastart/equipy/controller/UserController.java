@@ -5,7 +5,9 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import pl.javastart.equipy.model.dto.UserDTO;
@@ -23,10 +25,12 @@ public class UserController {
     }
     
     @GetMapping
-    public ResponseEntity<List<UserDTO>> findAllUser() {
-        List<UserDTO> users = userService.findAllUsers();
-        //log.info("Received {} results for users search", users.size());
-        return ResponseEntity.ok(users);
+    public ResponseEntity<List<UserDTO>> findAllUser(@RequestParam(required = false) String lastName) {
+    	if(lastName != null) {
+    		return ResponseEntity.ok(userService.findAllUsersByLastName(lastName));
+    	} else {
+	        //log.info("Received {} results for users search", users.size());
+	        return ResponseEntity.ok(userService.findAllUsers());
+    	}
     }
-
 }

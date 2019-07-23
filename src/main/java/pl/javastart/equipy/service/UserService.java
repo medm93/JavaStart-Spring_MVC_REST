@@ -23,7 +23,15 @@ public class UserService {
     }
 	
 	public List<UserDTO> findAllUsers() {
-		return userRepository.findAll().stream().map(userMapper::toDTO).collect(Collectors.toList());
+		return userRepository.findAll().stream()
+				.map(userMapper::toDTO)
+				.collect(Collectors.toList());
+	}
+	
+	public List<UserDTO> findAllUsersByLastName(String lastName) {
+		return userRepository.findAllByLastNameContainingIgnoreCase(lastName).stream()
+				.map(userMapper::toDTO)
+				.collect(Collectors.toList());
 	}
 
 }
