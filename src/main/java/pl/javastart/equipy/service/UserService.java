@@ -6,7 +6,6 @@ import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import pl.javastart.equipy.model.dto.UserDTO;
 import pl.javastart.equipy.model.entity.User;
 import pl.javastart.equipy.repository.UserRepository;
@@ -27,39 +26,30 @@ public class UserService {
 	
 	public UserDTO createUser(UserDTO userDTO) {
 		if(userDTO.getId() != null) {
-			throw new BadRequestException("Zapisywanie obiektu nie może mieć ustawionego ID");
+    		throw new BadRequestException("Zapisywany obiekt nie może mieć ustawionego id");
 		}
-		if(userRepository.existsByPesel(userDTO.getPesel())) {
-			throw new ConflictException("Użytkownik z takim peselem już istnieje");
-		}
-		User userEntity = userMapper.toEntity(userDTO);
-		User savedUser = userRepository.save(userEntity);
-		return userMapper.toDTO(savedUser);
+		Optional<User> searchResult = userRepository.findByPesel(userDTO.getPesel());
+		searchResult.ifPresent(userEntity -> {
+			throw new DuplicatePeselException();
+		});
+		return mapAndSaveUser(userDTO);
 	}
 	
-	public UserDTO findUser(Long id) {
-		Optional<User> searchResult = userRepository.findById(id);
-		if(!searchResult.isPresent()) {
-			throw new NotFoundException("Użytkownik o wskazanym id nie istnieje");
-		} else {
-			return searchResult.map(userMapper::toDTO).get();
-		}
+	public Optional<UserDTO> findUser(Long id) {
+		return userRepository.findById(id).map(userMapper::toDTO);
 	}
 	
 	public UserDTO updateUser(Long id, UserDTO userDTO) {
-		if(id != userDTO.getId()) {
-			throw new BadRequestException("Aktualizowany obiekt musi mieć id zgodne z id w ścieżce zasobu");
+		if(!id.equals(userDTO.getId())) {
+    		throw new BadRequestException("Aktualizowany obiekt musi mieć id zgodne z id w ścieżce zasobu");
 		}
-		if(userRepository.existsByPesel(userDTO.getPesel())) {
-			throw new ConflictException("Inny użytkownik z takim peselem już istnieje");
-		}
-		Optional<User> searchResult = userRepository.findById(id);
-		User userEntity = searchResult.get();
-		userEntity.setFirstName(userDTO.getFirstName());
-		userEntity.setLastName(userDTO.getLastName());
-		userEntity.setPesel(userDTO.getPesel());
-	    User updatedUser = userRepository.save(userEntity);
-	    return userMapper.toDTO(updatedUser);
+		Optional<User> searchResult = userRepository.findByPesel(userDTO.getPesel());
+		searchResult.ifPresent(userEntity -> {
+			if(!userEntity.getId().equals(userDTO.getId())) {
+				throw new DuplicatePeselException();
+			}
+		});
+		return mapAndSaveUser(userDTO);
 	}
 	
 	public List<UserDTO> findAllUsers() {
@@ -74,4 +64,9 @@ public class UserService {
 				.collect(Collectors.toList());
 	}
 
+	private UserDTO mapAndSaveUser(UserDTO userDTO) {
+		User userEntity = userMapper.toEntity(userDTO);
+		User savedUser = userRepository.save(userEntity);
+		return userMapper.toDTO(savedUser);
+	}
 }
