@@ -11,4 +11,5 @@ import pl.javastart.equipy.model.entity.User;
 public interface UserRepository extends JpaRepository<User, Long>{
 
 	List<User> findAllByLastNameContainingIgnoreCase(String lastName);
+	boolean existsByPesel(String pesel);
 }
