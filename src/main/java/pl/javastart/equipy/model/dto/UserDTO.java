@@ -7,6 +7,16 @@ public class UserDTO {
 	private String lastName;
 	private String pesel;
 	
+	public UserDTO() {
+	}
+	
+	public UserDTO(Long id, String firstName, String lastName, String pesel) {
+		this.id = id;
+		this.firstName = firstName;
+		this.lastName = lastName;
+		this.pesel = pesel;
+	}
+	
 	public Long getId() {
 		return id;
 	}
@@ -31,4 +41,11 @@ public class UserDTO {
 	public void setPesel(String pesel) {
 		this.pesel = pesel;
 	}
+
+	@Override
+	public String toString() {
+		return "UserDTO [id=" + id + ", firstName=" + firstName + ", lastName=" + lastName + ", pesel=" + pesel + "]";
+	}
+	
+	
 }

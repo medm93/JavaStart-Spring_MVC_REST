@@ -17,7 +17,7 @@ public class User {
 	@Column(name = "last_name")
 	private String lastName;
 	
-	@Column(name = "pesel")
+	@Column(name = "pesel", unique = true)
 	private String pesel;
 	
 	public User() {
@@ -70,4 +70,11 @@ public class User {
     public int hashCode() {
         return Objects.hash(id, firstName, lastName, pesel);
     }
+
+	@Override
+	public String toString() {
+		return "User [id=" + id + ", firstName=" + firstName + ", lastName=" + lastName + ", pesel=" + pesel + "]";
+	}
+    
+    
 }
