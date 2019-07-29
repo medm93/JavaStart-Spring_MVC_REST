@@ -27,4 +27,16 @@ public class AssetService {
 				.map(assetMapper::toDTO)
 				.collect(Collectors.toList());
 	}
+	
+	public List<AssetDTO> findAllByNameOrSerialNumber(String search) {
+		return assetRepository.findAllByNameOrSerialNumber(search).stream()
+				.map(assetMapper::toDTO)
+				.collect(Collectors.toList());
+	}
+	
+	/*public List<AssetDTO> findAllAssetsByNameOrSerialN(String name, String serialNumber) {
+		return assetRepository.findAllByNameContainingIgnoreCaseOrSerialNumberContainingIgnoreCase(name, serialNumber).stream()
+				.map(assetMapper::toDTO)
+				.collect(Collectors.toList());
+	}*/
 }
